@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tic-Tac-Toe Game</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: radial-gradient(circle at top, #e0f7fa, #ffffff);
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 10px;
+      margin: 20px auto;
+    }
+
+    .cell {
+      background: linear-gradient(135deg, #81d4fa, #e1f5fe);
+      border: 2px solid #0288d1;
+      font-size: 2rem;
+      color: #01579b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: transform 0.2s ease;
+    }
+
+    .cell:hover {
+      transform: scale(1.05);
+    }
+
+    .status {
+      font-size: 1.2rem;
+      margin-top: 10px;
+      color: #00796b;
+    }
+
+    .reset-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #00bcd4;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .reset-btn:hover {
+      background-color: #0097a7;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Tic-Tac-Toe</h1>
+    <div class="board" id="board">
+      <!-- 9 cells will be dynamically generated -->
+    </div>
+    <div class="status" id="status">Player X's turn</div>
+    <button class="reset-btn" onclick="resetGame()">Reset</button>
+  </div>
+
+  <script>
+    const board = document.getElementById('board');
+    const statusText = document.getElementById('status');
+
+    let currentPlayer = 'X';
+    let gameState = Array(9).fill(null);
+    let gameActive = true;
+
+    const winConditions = [
+      [0,1,2], [3,4,5], [6,7,8], // rows
+      [0,3,6], [1,4,7], [2,5,8], // columns
+      [0,4,8], [2,4,6]           // diagonals
+    ];
+
+    // Generate board
+    function initBoard() {
+      board.innerHTML = '';
+      gameState = Array(9).fill(null);
+      gameActive = true;
+      currentPlayer = 'X';
+      statusText.textContent = `Player ${currentPlayer}'s turn`;
+
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.index = i;
+        cell.addEventListener('click', handleCellClick);
+        board.appendChild(cell);
+      }
+    }
+
+    function handleCellClick(e) {
+      const index = e.target.dataset.index;
+      if (!gameState[index] && gameActive) {
+        gameState[index] = currentPlayer;
+        e.target.textContent = currentPlayer;
+        checkWinner();
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        if (gameActive) {
+          statusText.textContent = `Player ${currentPlayer}'s turn`;
+        }
+      }
+    }
+
+    function checkWinner() {
+      for (let condition of winConditions) {
+        const [a, b, c] = condition;
+        if (gameState[a] && gameState[a] === gameState[b] && gameState[b] === gameState[c]) {
+          statusText.textContent = `🎉 Player ${gameState[a]} wins!`;
+          gameActive = false;
+          return;
+        }
+      }
+
+      if (!gameState.includes(null)) {
+        statusText.textContent = "It's a draw!";
+        gameActive = false;
+      }
+    }
+
+    function resetGame() {
+      initBoard();
+    }
+
+    initBoard();
+  </script>
+
+</body>
+</html>
